@@ -1,5 +1,6 @@
 from ship import Ship
 from bot import Bot
+from config import SHIP_LAYOUT_OUTPUT
 
 
 class Game:
@@ -10,5 +11,5 @@ class Game:
     def play(self, time: int, q: int) -> bool:
         for i in range(time):
             self.ship.spread_fire(q)
-        self.ship.print_ship("output/ship_layout.csv")
+        self.ship.print_ship(SHIP_LAYOUT_OUTPUT)
         return True

@@ -7,25 +7,26 @@ import random
 class Ship:
     def __init__(self, D: int) -> None:
         self.D = D
-        self.blocked_cells = set()
+        self.closed_cells = set()
         self.open_cells = set()
         self.burning_cells = set()
         self.ship = self.create_ship()
-        self.open_random_blocked_cells_with_one_open_neighbor()
+        self.open_random_closed_cells_with_one_open_neighbor()
         self.open_random_dead_end_cells()
+        self.btn_location = self.place_button()
 
     def create_ship(self) -> List[List[int]]:
         """Creates an D x D matrix used for the layout of the ship"""
 
         # Generate D x D board initialized with 0
         ship = [[Cell.CLOSED] * self.D for i in range(self.D)]
-        self.blocked_cells = [(r, c) for r in range(self.D)
-                              for c in range(self.D)]
+        self.closed_cells = [(r, c) for r in range(self.D)
+                             for c in range(self.D)]
 
         # Choose a square in the interior to 'open' at random, or we use the seed if it was given
         random_r, random_c = randint(0, self.D - 1), randint(0, self.D - 1)
         ship[random_r][random_c] = Cell.OPEN
-        self.blocked_cells.remove((random_r, random_c))
+        self.closed_cells.remove((random_r, random_c))
         self.open_cells.add((random_r, random_c))
 
         return ship
@@ -52,35 +53,35 @@ class Ship:
 
         return output
 
-    def open_random_blocked_cells_with_one_open_neighbor(self) -> None:
+    def open_random_closed_cells_with_one_open_neighbor(self) -> None:
         """
         Iteratively chooses a random blocked cell which has only one open neighbor
         and opens it
         """
 
-        blocked_cells_with_single_neighbor = self.get_cells_with_one_open_neighbor(
-            self.blocked_cells
+        closed_cells_with_single_neighbor = self.get_cells_with_one_open_neighbor(
+            self.closed_cells
         )
 
-        while blocked_cells_with_single_neighbor:
+        while closed_cells_with_single_neighbor:
             # Pick a random blocked cell with a single neighbor
-            r, c = blocked_cells_with_single_neighbor[
-                randint(0, len(blocked_cells_with_single_neighbor) - 1)
+            r, c = closed_cells_with_single_neighbor[
+                randint(0, len(closed_cells_with_single_neighbor) - 1)
             ]
             # Open that cell
             self.ship[r][c] = Cell.OPEN
-            self.blocked_cells.remove((r, c))
+            self.closed_cells.remove((r, c))
             self.open_cells.add((r, c))
             # Get the new blocked cells with single neighbors
-            blocked_cells_with_single_neighbor = self.get_cells_with_one_open_neighbor(
-                self.blocked_cells
+            closed_cells_with_single_neighbor = self.get_cells_with_one_open_neighbor(
+                self.closed_cells
             )
 
     def open_random_dead_end_cells(self) -> None:
         """Chooses half of the dead end cells at random and opens those chosen"""
 
         dead_end_cells = self.get_cells_with_one_open_neighbor(
-            self.blocked_cells)
+            self.closed_cells)
         directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
 
         for _ in range(0, len(dead_end_cells), 2):
@@ -99,20 +100,20 @@ class Ship:
                 ):
                     # First time we find a closed cell neighbor we will open it and break
                     self.ship[row][col] = Cell.OPEN
-                    self.blocked_cells.remove((row, col))
+                    self.closed_cells.remove((row, col))
                     self.open_cells.add((row, col))
                     break
                 else:
                     random_dir = directions[randint(0, len(directions) - 1)]
             # Get the new dead end cells
             dead_end_cells = self.get_cells_with_one_open_neighbor(
-                self.blocked_cells)
+                self.closed_cells)
 
     def open_cell(self, r: int, c: int) -> None:
         """Sets ship[r][c] on fire if [r][c] are valid cells which can catch fire"""
 
         self.ship[r][c] = Cell.OPEN
-        self.blocked_cells.remove((r, c))
+        self.closed_cells.remove((r, c))
         self.open_cells.add((r, c))
 
     def spread_fire(self, q: int) -> None:
@@ -152,7 +153,15 @@ class Ship:
             print(f"[ERROR]: Cannot set cell ({r}, {c}) on fire...")
             exit(1)
 
-    def print_ship(self, file: str) -> List[List[int]]:
+    def place_button(self) -> List[int]:
+        """Places the button on a random closed cell and returns the location of button"""
+
+        r, c = random.choice(list(self.closed_cells))
+        self.closed_cells.remove((r, c))
+        self.ship[r][c] = Cell.BTN
+        return [r, c]
+
+    def print_ship(self, file: str) -> None:
         """Prints out the current state of the space ship to a specified file"""
 
         output_file = None

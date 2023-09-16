@@ -9,3 +9,6 @@ class Cell(Enum):
 
     def __str__(self):
         return '%s' % self.value
+
+
+SHIP_LAYOUT_OUTPUT = "output/ship_layout.csv"
