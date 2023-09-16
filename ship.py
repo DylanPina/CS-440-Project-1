@@ -1,6 +1,7 @@
-from typing import List, Optional
+from typing import List
 from random import randint
 from config import Cell
+import random
 
 
 class Ship:
@@ -8,9 +9,12 @@ class Ship:
         self.D = D
         self.blocked_cells = set()
         self.open_cells = set()
+        self.burning_cells = set()
         self.ship = self.create_ship()
         self.open_random_blocked_cells_with_one_open_neighbor()
         self.open_random_dead_end_cells()
+        self.spread_fire(0.8)
+        self.spread_fire(0.8)
 
     def create_ship(self) -> List[List[int]]:
         # Generate D x D board initialized with 0
@@ -112,6 +116,39 @@ class Ship:
                     random_dir = directions[randint(0, len(directions) - 1)]
             # Get the new dead end cells
             dead_end_cells = self.get_dead_end_cells()
+
+    def spread_fire(self, q: int) -> None:
+        # Check to see if this is the first flame
+        if not self.burning_cells:
+            # Choose a random open cell to start the fire
+            r, c = random.choice(list(self.open_cells))
+            self.set_cell_on_fire(r, c)
+            return
+
+        # Fire (potientially) spreads in every neighboring open cell
+        directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+        for r, c in self.burning_cells.copy():
+            for dr, dc in directions:
+                row, col = r + dr, c + dc
+                if (
+                    row in range(self.D)
+                    and col in range(self.D)
+                    and self.ship[row][col] == Cell.OPEN
+                ):
+                    cell_catches_fire = random.choices(
+                        [True, False], weights=(q, 1 - q), k=1
+                    )[0]
+                    if cell_catches_fire:
+                        self.set_cell_on_fire(row, col)
+
+    def set_cell_on_fire(self, r: int, c: int) -> None:
+        if r in range(self.D) and c in range(self.D) and self.ship[r][c] == Cell.OPEN:
+            self.ship[r][c] = Cell.FIRE
+            self.open_cells.remove((r, c))
+            self.burning_cells.add((r, c))
+        else:
+            print(f"[ERROR]: Cannot set cell ({r}, {c}) on fire...")
+            exit(1)
 
     def print_layout(self) -> List[List[int]]:
         layout = ""
