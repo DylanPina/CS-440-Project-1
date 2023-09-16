@@ -1,10 +1,10 @@
 from ship import Ship
-from bot import Bot
+from bots import BotOne
 from game import Game
 
 
 if __name__ == "__main__":
-    ship = Ship(50)
-    bot = Bot
-    game = Game(ship, bot)
+    bot = BotOne()
+    ship = Ship(50, bot)
+    game = Game(ship)
     game.play(100, 0.25)
