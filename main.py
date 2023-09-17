@@ -4,7 +4,8 @@ from game import Game
 
 
 if __name__ == "__main__":
+    ship = Ship(5)
     bot = BotOne()
-    ship = Ship(50, bot)
-    game = Game(ship)
-    game.play(100, 0.25)
+    ship.add_bot(bot)
+    game = Game(ship, bot)
+    game.play(10000, 0.25)

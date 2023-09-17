@@ -6,9 +6,8 @@ import random
 
 
 class Ship:
-    def __init__(self, D: int, bot: Bot) -> None:
+    def __init__(self, D: int) -> None:
         self.D = D
-        self.bot = bot
         self.closed_cells = set()
         self.open_cells = set()
         self.burning_cells = set()
@@ -16,15 +15,13 @@ class Ship:
         self.open_initial_cell()
         self.open_random_closed_cells_with_one_open_neighbor()
         self.open_random_dead_end_cells()
-        self.btn_location = self.place_button()
-        self.place_bot()
-        self.bot.set_ship_layout(self.layout)
+        self.place_button()
 
     def create_matrix(self) -> List[List[int]]:
         """Creates an D x D matrix used for the layout of the ship"""
 
         # Generate D x D board initialized with 0
-        layout = [[Cell.CLOSED] * self.D for i in range(self.D)]
+        layout = [[Cell.CLOSED] * self.D for _ in range(self.D)]
         self.closed_cells = [(r, c) for r in range(self.D)
                              for c in range(self.D)]
         return layout
@@ -165,19 +162,22 @@ class Ship:
         self.layout[r][c] = Cell.BTN
         return [r, c]
 
-    def place_bot(self) -> List[int]:
+    def add_bot(self, bot: Bot) -> None:
+        self.place_bot(bot)
+        bot.set_ship_layout(self.layout)
+        bot.setup()
+
+    def place_bot(self, bot: Bot) -> List[int]:
         """Places the bot on a random open cell and returns location of bot"""
 
         r, c = random.choice(list(self.open_cells))
         self.open_cells.remove((r, c))
         self.layout[r][c] = Cell.BOT
-        self.bot.location = [r, c]
-        print([r, c])
+        bot.location = (r, c)
 
-    def move_bot(self) -> None:
+    def move_bot(self, bot: Bot) -> None:
         """Moves bot to a different cell on the ship based on the bots implementation"""
-
-        self.bot.move()
+        r, c = bot.move()
 
     def print_layout(self, file: str) -> None:
         """Prints out the current state of the layout to a specified file"""
