@@ -7,7 +7,6 @@ class Cell(Enum):
     FIRE = 2
     BTN = 3
     BOT = 4
-    TEST = 9
 
     def __str__(self):
         return '%s' % self.value

@@ -1,3 +1,4 @@
+import utils
 from typing import List
 from random import randint
 from config import Cell
@@ -8,6 +9,7 @@ import random
 class Ship:
     def __init__(self, D: int) -> None:
         self.D = D
+        self.bot = None
         self.closed_cells = set()
         self.open_cells = set()
         self.burning_cells = set()
@@ -117,15 +119,15 @@ class Ship:
         self.closed_cells.remove((r, c))
         self.open_cells.add((r, c))
 
+    def start_fire(self) -> None:
+        """Places the first fire cell on a random open cell"""
+
+        r, c = random.choice(list(self.open_cells))
+        self.set_cell_on_fire(r, c)
+        print(f"[INFO]: Fire started at ({r}, {c})")
+
     def spread_fire(self, q: int) -> None:
         """Potientially spreads a fire onto neighboring open cells with a probability of 1 - (1 - q)^K"""
-
-        # Check to see if this is the first flame
-        if not self.burning_cells:
-            # Choose a random open cell to start the fire
-            r, c = random.choice(list(self.open_cells))
-            self.set_cell_on_fire(r, c)
-            return
 
         # Fire (potientially) spreads in every neighboring open cell
         directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
@@ -147,6 +149,12 @@ class Ship:
         """Sets layout[r][c] on fire if [r][c] are valid cells which can catch fire"""
 
         if r in range(self.D) and c in range(self.D) and self.layout[r][c] == Cell.OPEN:
+            if self.bot and (r, c) == self.bot.location:
+                print("[FAILURE]: Fire has spread to bot's location! ")
+                utils.print_layout(self.layout, title="--Final State--")
+                utils.print_layout(self.bot.get_traversal(),
+                                   title="--Traversal--")
+                exit(1)
             self.layout[r][c] = Cell.FIRE
             self.open_cells.remove((r, c))
             self.burning_cells.add((r, c))
@@ -163,6 +171,9 @@ class Ship:
         return [r, c]
 
     def add_bot(self, bot: Bot) -> None:
+        """Injects a bot onto the ship and preforms bot setup"""
+
+        self.bot = bot
         self.place_bot(bot)
         bot.set_ship_layout(self.layout)
         bot.setup()
@@ -174,28 +185,4 @@ class Ship:
         self.open_cells.remove((r, c))
         self.layout[r][c] = Cell.BOT
         bot.location = (r, c)
-
-    def move_bot(self, bot: Bot) -> None:
-        """Moves bot to a different cell on the ship based on the bots implementation"""
-        r, c = bot.move()
-
-    def print_layout(self, file: str) -> None:
-        """Prints out the current state of the layout to a specified file"""
-
-        output_file = None
-        try:
-            output_file = open(file, "w")
-
-            layout = ""
-            for r in range(self.D):
-                for c in range(self.D):
-                    layout += f"{self.layout[r][c].value}, "
-
-                layout = layout.rsplit(", ", 1)[0]
-                if r != self.D - 1:
-                    layout += "\n"
-
-            output_file.write(layout)
-            output_file.close()
-        except IOError:
-            print(f"[ERROR]: Unable to write to output file to '{file}'")
+        print(f"[INFO]: Bot placed at ({r}, {c})")

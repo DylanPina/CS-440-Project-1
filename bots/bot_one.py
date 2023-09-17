@@ -12,7 +12,6 @@ class BotOne(Bot):
 
     def __init__(self) -> None:
         super().__init__()
-        self.shortest_path = []
 
     def move(self) -> Tuple[int]:
         r, c = self.shortest_path.pop()
@@ -60,5 +59,5 @@ class BotOne(Bot):
         while shortest_path[-1] != self.location:
             r, c = parent[shortest_path[-1]]
             shortest_path.append((r, c))
-        
+
         return shortest_path if shortest_path else [-1, -1]
