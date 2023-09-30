@@ -17,7 +17,7 @@ class Ship:
         self.open_initial_cell()
         self.open_random_closed_cells_with_one_open_neighbor()
         self.open_random_dead_end_cells()
-        self.place_button()
+        self.btn_location = self.place_button()
 
     def create_matrix(self) -> List[List[int]]:
         """Creates an D x D matrix used for the layout of the ship"""
@@ -38,11 +38,10 @@ class Ship:
         """Returns a list of all the cells from a set of given cells which only have one open neighbor"""
 
         output = []
-        directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
 
         for r, c in cells:
             open_neighbors = 0
-            for dr, dc in directions:
+            for dr, dc in [[1, 0], [-1, 0], [0, 1], [0, -1]]:
                 row, col = r + dr, c + dc
                 if (
                     row in range(self.D)
@@ -130,9 +129,8 @@ class Ship:
         """Potientially spreads a fire onto neighboring open cells with a probability of 1 - (1 - q)^K"""
 
         # Fire (potientially) spreads in every neighboring open cell
-        directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
         for r, c in self.burning_cells.copy():
-            for dr, dc in directions:
+            for dr, dc in [[1, 0], [-1, 0], [0, 1], [0, -1]]:
                 row, col = r + dr, c + dc
                 if (
                     row in range(self.D)
@@ -176,6 +174,7 @@ class Ship:
         self.bot = bot
         self.place_bot(bot)
         bot.set_ship_layout(self.layout)
+        bot.set_btn_location(self.btn_location)
         bot.setup()
 
     def place_bot(self, bot: Bot) -> List[int]:

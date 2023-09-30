@@ -13,7 +13,6 @@ class BotTwo(Bot):
 
     def __init__(self) -> None:
         super().__init__()
-        self.parent = {}
 
     def move(self) -> None:
         if self.is_path_on_fire():
@@ -53,14 +52,13 @@ class BotTwo(Bot):
         queue = deque()
         queue.append(self.location)
 
-        directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
         while queue:
             r, c = queue.pop()
             if self.ship_layout[r][c] == Cell.BTN:
                 shortest_path.append((r, c))
                 break
 
-            for dr, dc in directions:
+            for dr, dc in [[1, 0], [-1, 0], [0, 1], [0, -1]]:
                 row, col = r + dr, c + dc
                 if (
                     row not in range(len(self.ship_layout))

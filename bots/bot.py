@@ -9,12 +9,17 @@ class Bot(ABC):
     def __init__(self):
         self.ship_layout = None
         self.location = None
+        self.btn_location = None
         self.visited = set()
+        self.parent = {}
         self.shortest_path = []
         self.traversed = []
 
     def set_ship_layout(self, ship_layout: List[List[Cell]]) -> None:
         self.ship_layout = ship_layout
+
+    def set_btn_location(self, btn_location: List[int]) -> None:
+        self.btn_location = btn_location
 
     def reached_button(self) -> bool:
         """Returns True if the bot is on the button cell"""
