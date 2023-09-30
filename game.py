@@ -14,6 +14,8 @@ class Game:
     def play(self, time: int, q: int) -> bool:
         open(SHIP_LAYOUT_OUTPUT, "w").close()
 
+        utils.print_layout(self.ship.layout, title="--Initial State--")
+
         for _ in range(time):
             self.ship.spread_fire(q)
             self.bot.move()

@@ -28,10 +28,9 @@ class BotTwo(Bot):
                 print(
                     f"[INFO]: New shortest path found -> {new_shortest_path}")
                 self.shortest_path = new_shortest_path
-        else:
-            r, c = self.shortest_path.pop()
-            self.location = (r, c)
-            self.traversed.append((r, c))
+        r, c = self.shortest_path.pop()
+        self.location = (r, c)
+        self.traversed.append((r, c))
 
         return (r, c)
 

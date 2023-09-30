@@ -12,8 +12,23 @@ def print_layout(layout: List[List[Cell]], file: Optional[str] = SHIP_LAYOUT_OUT
     try:
         output_file = open(file, "a")
 
+        # print num of column
         output = f"{title}\n" if title else ""
+        count = 0
+        for c in range(len(layout) + 1):
+            if c == 0:
+                output += "   "
+                continue
+            output += f"{count}  "
+            count = (count + 1) % 10
+        output += "\n"
+        count = 0
+
         for r in range(len(layout)):
+            # print num of row
+            output += f"{count}  "
+            count = (count + 1) % 10
+
             for c in range(len(layout)):
                 output += f"{layout[r][c].value}, "
 
