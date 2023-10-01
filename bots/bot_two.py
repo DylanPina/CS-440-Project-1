@@ -2,7 +2,7 @@ import utils
 from .bot import Bot
 from typing import List
 from config import Cell
-from collections import deque
+from heapq import heappop, heappush
 
 
 class BotTwo(Bot):
@@ -47,13 +47,13 @@ class BotTwo(Bot):
     def get_shortest_path(self) -> List[int]:
         """Returns the shortest path from the current location to the button"""
 
+        lr, lc = self.location
         shortest_path = []
-        visited = set(self.location)
-        queue = deque()
-        queue.append(self.location)
+        visited = set()
+        minHeap = [[self.heuristic([lr, lc]), (self.location)]]
 
-        while queue:
-            r, c = queue.pop()
+        while minHeap:
+            _, (r, c) = heappop(minHeap)
             if self.ship_layout[r][c] == Cell.BTN:
                 shortest_path.append((r, c))
                 break
@@ -69,10 +69,9 @@ class BotTwo(Bot):
                 ):
                     continue
 
-                queue.append((row, col))
+                heappush(minHeap, [self.heuristic([row, col]), (row, col)])
                 self.parent[(row, col)] = (r, c)
                 visited.add((row, col))
-                # print(f"({row}, {col}): {self.ship_layout[row][col]}")
 
         if not shortest_path:
             return [-1, -1]
@@ -84,6 +83,8 @@ class BotTwo(Bot):
         return shortest_path
 
     def is_path_on_fire(self) -> bool:
+        """Returns True if the current path is blocked by fire, False otherwise"""
+
         remaining_path = self.shortest_path[len(self.traversed) - 1:]
         for r, c in remaining_path:
             if self.ship_layout[r][c] == Cell.FIRE:
@@ -91,3 +92,10 @@ class BotTwo(Bot):
                     f"[INFO]: Cell ({r}, {c}) on current shortest path is in on fire!")
                 return True
         return False
+
+    def heuristic(self, location: List[int]):
+        """Returns the Manhattan distance from current location to the button"""
+
+        lr, lc = location
+        br, bc = self.btn_location
+        return abs(lr - br) + abs(lc - bc)
