@@ -9,5 +9,5 @@ if __name__ == "__main__":
     ship = Ship(20)
     bot = BotThree()
     game = Game(ship, bot)
-    game.play(10000, 0.5)
+    game.play(q=0.5)
     print(f"[INFO]: Execution time ({time.time() - start}ms)")

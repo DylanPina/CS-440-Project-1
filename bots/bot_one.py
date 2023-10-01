@@ -26,7 +26,7 @@ class BotOne(Bot):
     def setup(self) -> None:
         self.shortest_path = self.get_shortest_path()
         if self.shortest_path == [-1, -1]:
-           self.path_not_found = True
+            self.path_not_found = True
         else:
             print(f"[INFO]: Shortest path -> {self.shortest_path[::-1]}")
 
@@ -67,10 +67,3 @@ class BotOne(Bot):
             shortest_path.append((r, c))
 
         return shortest_path if shortest_path else [-1, -1]
-
-    def heuristic(self, location: List[int]):
-        """Returns the Manhattan distance from current location to the button"""
-
-        lr, lc = location
-        br, bc = self.btn_location
-        return abs(lr - br) + abs(lc - bc)

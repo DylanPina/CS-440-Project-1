@@ -55,6 +55,13 @@ class Bot(ABC):
         matrix[r][c] = self.ship_layout[r][c]
         return matrix
 
+    def heuristic(self, location: List[int]):
+        """Returns the Manhattan distance from current location to the button"""
+
+        lr, lc = location
+        br, bc = self.btn_location
+        return abs(lr - br) + abs(lc - bc)
+
     @abstractmethod
     def setup(self) -> None:
         """Performs any initial setup which the bot needs to do"""

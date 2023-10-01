@@ -12,11 +12,11 @@ class Game:
         self.ship.start_fire()
         self.ship.add_bot(bot)
 
-    def play(self, t: int, q: int) -> bool:
+    def play(self, q: int) -> bool:
         open(SHIP_LAYOUT_OUTPUT, "w").close()
         # Print the initial state of the board
         utils.print_layout(self.ship.layout, title="--Initial State--")
-        for _ in range(t):
+        while True:
             self.ship.spread_fire(q)
             self.bot.move()
 
