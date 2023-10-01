@@ -6,8 +6,8 @@ from heapq import heappop, heappush
 
 class BotFour(Bot):
     """
-    At every time step, the bot re-plans the shortest path to the button, avoiding the current fire cells, 
-    and then executes the next step in that plan.
+    The bot plans the shortest path to the button using bi-directional A* search, avoiding the current fire cells, and then executes the next step in that plan.
+    If fire spreads on the upcoming path during a traversal, the bot will re-attempt to find another shortest path.
     """
 
     def __init__(self) -> None:
@@ -115,9 +115,9 @@ class BotFour(Bot):
 
         # Combine the two shortest paths
         forward_shortest_path.reverse()
-        backwards_shortest_path = backwards_shortest_path[1::]
-        shortest_path = forward_shortest_path[1::] + backwards_shortest_path[1::]
-        
+        shortest_path = forward_shortest_path[1::] + \
+            backwards_shortest_path[1::]
+
         return shortest_path
 
     def is_path_on_fire(self) -> bool:
