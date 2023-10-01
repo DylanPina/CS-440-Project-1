@@ -117,6 +117,7 @@ class BotFour(Bot):
         forward_shortest_path.reverse()
         backwards_shortest_path = backwards_shortest_path[1::]
         shortest_path = forward_shortest_path[1::] + backwards_shortest_path[1::]
+        
         return shortest_path
 
     def is_path_on_fire(self) -> bool:

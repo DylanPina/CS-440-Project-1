@@ -28,7 +28,7 @@ class BotThree(Bot):
                     f"[INFO]: New shortest path found -> {new_shortest_path}")
                 self.shortest_path = new_shortest_path
 
-        r, c = self.shortest_path.pop()
+        r, c = self.shortest_path.pop(0)
         self.location = (r, c)
         self.traversed.append((r, c))
         return (r, c)
@@ -38,7 +38,7 @@ class BotThree(Bot):
         if self.shortest_path == [-1, -1]:
             self.path_not_found = True
         else:
-            print(f"[INFO]: Shortest path -> {self.shortest_path[::-1]}")
+            print(f"[INFO]: Shortest path -> {self.shortest_path}")
 
     def get_shortest_path(self, avoid_adjacent_fire_cells: bool = True) -> List[int]:
         """Returns the shortest path from the current location to the button"""
@@ -95,8 +95,9 @@ class BotThree(Bot):
         while shortest_path[-1] != self.location:
             r, c = self.parent[shortest_path[-1]]
             shortest_path.append((r, c))
+        shortest_path.reverse()
 
-        return shortest_path
+        return shortest_path[1:]
 
     def is_path_on_fire(self) -> bool:
         """Returns True if the current path is blocked by fire, False otherwise"""

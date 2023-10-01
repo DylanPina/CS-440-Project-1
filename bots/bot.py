@@ -34,10 +34,7 @@ class Bot(ABC):
         """Returns True if the bot is on a burning cell"""
 
         r, c = self.location
-        if self.ship_layout[r][c] == Cell.FIRE:
-            print("[FAILURE]: Fire has spread to bot's location!")
-            return True
-        return False
+        return self.ship_layout[r][c] == Cell.FIRE
 
     def get_traversal(self) -> List[List[int]]:
         """Returns a matrix representing the traversal"""
@@ -52,7 +49,6 @@ class Bot(ABC):
             matrix[r][c] = Cell.OPEN
         r, c = self.traversed[-1]
         matrix[r][c] = self.ship_layout[r][c]
-        print((r, c), matrix[r][c])
         return matrix
 
     def heuristic(self, source: List[int], destination: List[int] = None):

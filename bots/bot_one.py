@@ -17,7 +17,7 @@ class BotOne(Bot):
         if self.is_on_fire() or self.path_not_found:
             return self.location
 
-        r, c = self.shortest_path.pop()
+        r, c = self.shortest_path.pop(0)
         self.location = (r, c)
         self.traversed.append((r, c))
         return (r, c)
@@ -27,7 +27,7 @@ class BotOne(Bot):
         if self.shortest_path == [-1, -1]:
             self.path_not_found = True
         else:
-            print(f"[INFO]: Shortest path -> {self.shortest_path[::-1]}")
+            print(f"[INFO]: Shortest path -> {self.shortest_path}")
 
     def get_shortest_path(self) -> List[int]:
         """Returns the shortest path from the current location to the button"""
@@ -64,5 +64,6 @@ class BotOne(Bot):
         while shortest_path[-1] != self.location:
             r, c = self.parent[shortest_path[-1]]
             shortest_path.append((r, c))
-
-        return shortest_path if shortest_path else [-1, -1]
+        shortest_path.reverse()
+        
+        return shortest_path[1:]
