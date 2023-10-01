@@ -15,6 +15,9 @@ class BotOne(Bot):
         super().__init__()
 
     def move(self) -> Tuple[int]:
+        if self.is_on_fire() or self.path_not_found:
+            return self.location
+
         r, c = self.shortest_path.pop()
         self.location = (r, c)
         self.traversed.append((r, c))
@@ -23,10 +26,7 @@ class BotOne(Bot):
     def setup(self) -> None:
         self.shortest_path = self.get_shortest_path()
         if self.shortest_path == [-1, -1]:
-            print("[FAILURE]: No path to button")
-            utils.print_layout(self.ship_layout, title="--Final State--")
-            utils.print_layout(self.get_traversal(), title="--Traversal--")
-            exit(1)
+           self.path_not_found = True
         else:
             print(f"[INFO]: Shortest path -> {self.shortest_path[::-1]}")
 

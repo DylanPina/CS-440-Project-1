@@ -2,6 +2,7 @@ from ship import Ship
 from config import SHIP_LAYOUT_OUTPUT
 from bots import Bot
 import utils
+import time
 
 
 class Game:
@@ -11,10 +12,11 @@ class Game:
         self.ship.start_fire()
         self.ship.add_bot(bot)
 
-    def play(self, time: int, q: int) -> bool:
+    def play(self, t: int, q: int) -> bool:
         open(SHIP_LAYOUT_OUTPUT, "w").close()
-
-        for _ in range(time):
+        # Print the initial state of the board
+        utils.print_layout(self.ship.layout, title="--Initial State--")
+        for _ in range(t):
             self.ship.spread_fire(q)
             self.bot.move()
 
@@ -23,6 +25,9 @@ class Game:
                 break
             if self.bot.is_on_fire():
                 print("[FAILURE]: Bot is on fire!")
+                break
+            if self.bot.path_not_found:
+                print("[FAILURE]: No path to button")
                 break
 
         # Printing out the final state of the board

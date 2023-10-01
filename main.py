@@ -1,10 +1,13 @@
 from ship import Ship
 from bots import BotOne, BotTwo, BotThree
 from game import Game
+import time
 
 
 if __name__ == "__main__":
+    start = time.time()
     ship = Ship(20)
-    bot = BotTwo()
+    bot = BotThree()
     game = Game(ship, bot)
     game.play(10000, 0.5)
+    print(f"[INFO]: Execution time ({time.time() - start}ms)")

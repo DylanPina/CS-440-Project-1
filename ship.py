@@ -147,12 +147,6 @@ class Ship:
         """Sets layout[r][c] on fire if [r][c] are valid cells which can catch fire"""
 
         if r in range(self.D) and c in range(self.D) and self.layout[r][c] == Cell.OPEN:
-            if self.bot and (r, c) == self.bot.location:
-                print("[FAILURE]: Fire has spread to bot's location! ")
-                utils.print_layout(self.layout, title="--Final State--")
-                utils.print_layout(self.bot.get_traversal(),
-                                   title="--Traversal--")
-                exit(1)
             self.layout[r][c] = Cell.FIRE
             self.open_cells.remove((r, c))
             self.burning_cells.add((r, c))

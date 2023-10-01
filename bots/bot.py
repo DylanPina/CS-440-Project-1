@@ -14,6 +14,7 @@ class Bot(ABC):
         self.parent = {}
         self.shortest_path = []
         self.traversed = []
+        self.path_not_found = False
 
     def set_ship_layout(self, ship_layout: List[List[Cell]]) -> None:
         self.ship_layout = ship_layout
@@ -31,7 +32,10 @@ class Bot(ABC):
         """Returns True if the bot is on a burning cell"""
 
         r, c = self.location
-        return self.ship_layout[r][c] == Cell.FIRE
+        if self.ship_layout[r][c] == Cell.FIRE:
+            print("[FAILURE]: Fire has spread to bot's location!")
+            return True
+        return False
 
     def get_traversal(self) -> List[List[int]]:
         """Returns a matrix representing the traversal"""

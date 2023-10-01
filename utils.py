@@ -25,3 +25,5 @@ def print_layout(layout: List[List[Cell]], file: Optional[str] = SHIP_LAYOUT_OUT
         output_file.close()
     except IOError:
         print(f"[ERROR]: Unable to write to output file to '{file}'")
+
+

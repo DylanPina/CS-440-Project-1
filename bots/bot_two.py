@@ -15,14 +15,14 @@ class BotTwo(Bot):
         super().__init__()
 
     def move(self) -> None:
+        if self.is_on_fire() or self.path_not_found:
+            return self.location
+
         if self.is_path_on_fire():
             print("[INFO]: Recalculating shortest path")
             new_shortest_path = self.get_shortest_path()
             if new_shortest_path == [-1, -1]:
-                print("[FAILURE]: No path to button")
-                utils.print_layout(self.ship_layout, title="--Final State--")
-                utils.print_layout(self.get_traversal(), title="--Traversal--")
-                exit(1)
+                self.path_not_found = True
             elif new_shortest_path != self.shortest_path:
                 print(
                     f"[INFO]: New shortest path found -> {new_shortest_path}")
