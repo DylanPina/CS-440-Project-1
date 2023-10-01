@@ -1,4 +1,3 @@
-import utils
 from .bot import Bot
 from typing import List
 from config import Cell
@@ -23,24 +22,21 @@ class BotTwo(Bot):
             new_shortest_path = self.get_shortest_path()
             if new_shortest_path == [-1, -1]:
                 self.path_not_found = True
+                return
             elif new_shortest_path != self.shortest_path:
                 print(
                     f"[INFO]: New shortest path found -> {new_shortest_path}")
                 self.shortest_path = new_shortest_path
-        else:
-            r, c = self.shortest_path.pop()
-            self.location = (r, c)
-            self.traversed.append((r, c))
 
+        r, c = self.shortest_path.pop()
+        self.location = (r, c)
+        self.traversed.append((r, c))
         return (r, c)
 
     def setup(self) -> None:
         self.shortest_path = self.get_shortest_path()
         if self.shortest_path == [-1, -1]:
-            print("[FAILURE]: No path to button")
-            utils.print_layout(self.ship_layout, title="--Final State--")
-            utils.print_layout(self.get_traversal(), title="--Traversal--")
-            exit(1)
+            self.path_not_found = True
         else:
             print(f"[INFO]: Shortest path -> {self.shortest_path[::-1]}")
 

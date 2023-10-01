@@ -1,4 +1,3 @@
-import utils
 from typing import List
 from random import randint
 from config import Cell
@@ -160,6 +159,7 @@ class Ship:
         r, c = random.choice(list(self.open_cells))
         self.open_cells.remove((r, c))
         self.layout[r][c] = Cell.BTN
+        print(f"[INFO]: Button placed at ({r}, {c})")
         return [r, c]
 
     def add_bot(self, bot: Bot) -> None:
@@ -177,5 +177,5 @@ class Ship:
         r, c = random.choice(list(self.open_cells))
         self.open_cells.remove((r, c))
         self.layout[r][c] = Cell.BOT
-        bot.location = (r, c)
+        bot.starting_location = bot.location = (r, c)
         print(f"[INFO]: Bot placed at ({r}, {c})")

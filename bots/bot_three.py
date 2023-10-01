@@ -1,4 +1,3 @@
-import utils
 from .bot import Bot
 from typing import List
 from config import Cell
@@ -7,9 +6,8 @@ from heapq import heappop, heappush
 
 class BotThree(Bot):
     """
-    At every time step, the bot re-plans the shortest path to the button, avoiding the current fire cells and any cells adjacent to current fire cells, 
-    if possible, then executes the next step in that plan. If there is no such path, it plans the shortest path based only on current fire cells, 
-    then executes the next step in that plan
+    At every time step, the bot re-plans the shortest path to the button, avoiding the current fire cells and any cells adjacent to current fire cells, if possible, then executes the next step in that plan. 
+    If there is no such path, it plans the shortest path based only on current fire cells, then executes the next step in that plan
     """
 
     def __init__(self) -> None:
@@ -29,11 +27,10 @@ class BotThree(Bot):
                 print(
                     f"[INFO]: New shortest path found -> {new_shortest_path}")
                 self.shortest_path = new_shortest_path
-        else:
-            r, c = self.shortest_path.pop()
-            self.location = (r, c)
-            self.traversed.append((r, c))
 
+        r, c = self.shortest_path.pop()
+        self.location = (r, c)
+        self.traversed.append((r, c))
         return (r, c)
 
     def setup(self) -> None:

@@ -2,7 +2,6 @@ from .bot import Bot
 from typing import Tuple, List
 from config import Cell
 from heapq import heappush, heappop
-import utils
 
 
 class BotOne(Bot):

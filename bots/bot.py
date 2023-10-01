@@ -8,6 +8,7 @@ class Bot(ABC):
 
     def __init__(self):
         self.ship_layout = None
+        self.starting_location = None
         self.location = None
         self.btn_location = None
         self.visited = set()
@@ -20,7 +21,8 @@ class Bot(ABC):
         self.ship_layout = ship_layout
 
     def set_btn_location(self, btn_location: List[int]) -> None:
-        self.btn_location = btn_location
+        br, bc = btn_location
+        self.btn_location = (br, bc)
 
     def reached_button(self) -> bool:
         """Returns True if the bot is on the button cell"""
@@ -46,21 +48,19 @@ class Bot(ABC):
 
         matrix = [[Cell.CLOSED] * len(self.ship_layout)
                   for _ in range(len(self.ship_layout))]
-        for i, (r, c) in enumerate(self.traversed[:-1]):
-            if i == 0:
-                matrix[r][c] = Cell.BOT
-            else:
-                matrix[r][c] = Cell.OPEN
+        for (r, c) in self.traversed[:-1]:
+            matrix[r][c] = Cell.OPEN
         r, c = self.traversed[-1]
         matrix[r][c] = self.ship_layout[r][c]
+        print((r, c), matrix[r][c])
         return matrix
 
-    def heuristic(self, location: List[int]):
+    def heuristic(self, source: List[int], destination: List[int] = None):
         """Returns the Manhattan distance from current location to the button"""
 
-        lr, lc = location
-        br, bc = self.btn_location
-        return abs(lr - br) + abs(lc - bc)
+        sr, sc = source
+        dr, dc = destination if destination else self.btn_location
+        return abs(sr - sc) + abs(dr - dc)
 
     @abstractmethod
     def setup(self) -> None:

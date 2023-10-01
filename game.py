@@ -32,4 +32,5 @@ class Game:
 
         # Printing out the final state of the board
         utils.print_layout(self.ship.layout, title="--Final State--")
-        utils.print_layout(self.bot.get_traversal(), title="--Traversal--")
+        utils.print_layout(self.bot.get_traversal(
+        ), bot_start_location=self.bot.starting_location, title="--Traversal--")
