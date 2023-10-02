@@ -1,6 +1,6 @@
 from .bot import Bot
 from typing import List
-from config import Cell
+from config import Cell, Bots
 from heapq import heappop, heappush
 
 
@@ -12,6 +12,7 @@ class BotFour(Bot):
 
     def __init__(self) -> None:
         super().__init__()
+        self.variant = Bots.BOT4
 
     def move(self) -> None:
         if self.is_on_fire() or self.path_not_found:

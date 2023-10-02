@@ -57,6 +57,7 @@ class Game:
 
         return GameResult(
             outcome=outcome,
+            bot_variant=self.bot.variant,
             ship_dimensions=self.ship.D,
             q=self.ship.q,
             run_time_ms=(time.time() - start) * 1000

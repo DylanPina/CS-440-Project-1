@@ -1,6 +1,6 @@
 from .bot import Bot
 from typing import Tuple, List
-from config import Cell
+from config import Cell, Bots
 from heapq import heappush, heappop
 
 
@@ -12,6 +12,7 @@ class BotOne(Bot):
 
     def __init__(self) -> None:
         super().__init__()
+        self.variant = Bots.BOT1
 
     def move(self) -> Tuple[int]:
         if self.is_on_fire() or self.path_not_found:
@@ -65,5 +66,5 @@ class BotOne(Bot):
             r, c = self.parent[shortest_path[-1]]
             shortest_path.append((r, c))
         shortest_path.reverse()
-        
+
         return shortest_path[1:]
