@@ -6,8 +6,9 @@ import random
 
 
 class Ship:
-    def __init__(self, D: int) -> None:
+    def __init__(self, D: int, q: int) -> None:
         self.D = D
+        self.q = q
         self.bot = None
         self.closed_cells = set()
         self.open_cells = set()
@@ -28,7 +29,7 @@ class Ship:
         return layout
 
     def open_initial_cell(self) -> None:
-        """Choose a square in the interior to 'open' at random, or we use the seed if it was given"""
+        """Choose a sself.quare in the interior to 'open' at random, or we use the seed if it was given"""
 
         random_r, random_c = randint(0, self.D - 1), randint(0, self.D - 1)
         self.open_cell(random_r, random_c)
@@ -124,7 +125,7 @@ class Ship:
         self.set_cell_on_fire(r, c)
         print(f"[INFO]: Fire started at ({r}, {c})")
 
-    def spread_fire(self, q: int) -> None:
+    def spread_fire(self) -> None:
         """Potientially spreads a fire onto neighboring open cells with a probability of 1 - (1 - q)^K"""
 
         # Fire (potientially) spreads in every neighboring open cell
@@ -137,7 +138,7 @@ class Ship:
                     and self.layout[row][col] == Cell.OPEN
                 ):
                     cell_catches_fire = random.choices(
-                        [True, False], weights=(q, 1 - q), k=1
+                        [True, False], weights=(self.q, 1 - self.q), k=1
                     )[0]
                     if cell_catches_fire:
                         self.set_cell_on_fire(row, col)

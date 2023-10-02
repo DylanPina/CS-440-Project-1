@@ -1,13 +1,11 @@
-from ship import Ship
-from bots import BotOne, BotTwo, BotThree, BotFour
-from game import Game
-import time
+from game_builder import GameBuilder
+from config import Bots
 
 
 if __name__ == "__main__":
-    start = time.time()
-    ship = Ship(20)
-    bot = BotFour()
-    game = Game(ship, bot)
-    game.play(q=0.5)
-    print(f"[INFO]: Execution time ({time.time() - start}ms)")
+    benchmarks = []
+    for _ in range(1):
+        game = GameBuilder().add_ship(D=100, q=0.5).add_bot(Bots.BOT4).build()
+        benchmarks.append(game.play())
+    
+    print(*benchmarks)
