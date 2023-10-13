@@ -12,10 +12,11 @@ class Ship:
         self.q = q
         self.bot = None
         self.seed = seed
+        self.layout = ""
         self.closed_cells = set()
         self.open_cells = set()
         self.burning_cells = set()
-        self.layout = ""
+        self.fire_start_location = None
         if seed:
             self.layout = seed.layout
             self.closed_cells = seed.closed_cells
@@ -135,6 +136,7 @@ class Ship:
                              ) if not self.seed else self.seed.fire_start_location
         if not self.seed:
             self.set_cell_on_fire(r, c)
+        self.fire_start_location = (r, c)
         print(f"[INFO]: Fire started at ({r}, {c})")
 
     def spread_fire(self) -> None:
@@ -182,6 +184,7 @@ class Ship:
         self.place_bot(bot)
         bot.set_ship_layout(self.layout)
         bot.set_btn_location(self.btn_location)
+        bot.set_fire_location(self.fire_start_location)
         bot.setup()
 
     def place_bot(self, bot: Bot) -> List[int]:

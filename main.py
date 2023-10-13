@@ -6,5 +6,5 @@ from seed import Seed
 
 if __name__ == "__main__":
     benchmark = BenchmarkAssessment(
-        iterations=1, d=10, q=0.5, bot_variant=Bots.BOT4).run(output=True, seed=Seed("input/seed.csv"))
+        iterations=1, d=100, q=0.5, bot_variant=Bots.BOT4).run(output=True, seed=None)
     print(*benchmark)
