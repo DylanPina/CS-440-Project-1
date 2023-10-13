@@ -2,6 +2,7 @@ from game import Game
 from ship import Ship
 from bots import BotOne, BotTwo, BotThree, BotFour
 from config import Bots
+from seed import Seed
 
 
 class GameBuilder():
@@ -20,9 +21,12 @@ class GameBuilder():
                 self.game.set_bot(BotFour())
         return self
 
-    def add_ship(self, D: int, q: int):
-        self.game.set_ship(Ship(D, q))
+    def add_ship(self, D: int, q: int, seed: Seed = None):
+        self.game.set_ship(Ship(D, q, seed))
         return self
+
+    def add_seed(self, seed: Seed = None):
+        self.game.add_seed(seed)
 
     def build(self):
         return self.game

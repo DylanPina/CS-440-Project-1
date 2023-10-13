@@ -11,13 +11,12 @@ class BenchmarkAssessment:
         self.bot_variant = bot_variant
         self.results = []
 
-    def run(self) -> List[GameResult]:
+    def run(self, output=False, seed=None) -> List[GameResult]:
         benchmarks = []
         for _ in range(self.iterations):
             game = GameBuilder()\
-                .add_ship(D=self.d, q=self.q)\
+                .add_ship(D=self.d, q=self.q, seed=seed)\
                 .add_bot(self.bot_variant)\
                 .build()
-            benchmarks.append(game.play())
+            benchmarks.append(game.play(output))
         return benchmarks
-        
