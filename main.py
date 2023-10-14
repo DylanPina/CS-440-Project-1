@@ -48,5 +48,5 @@ if __name__ == "__main__":
         axis.xaxis.set_minor_formatter(FormatStrFormatter('% 1.2f'))
         # plot, save, and clear
         axis.plot(qvals, successMap)
-        plt.savefig(f"{bot}-ITR:{ITR}-D:{DVAL}")
+        plt.savefig(f"{bot}-ITR-{ITR}-D-{DVAL}")
         plt.clf()
