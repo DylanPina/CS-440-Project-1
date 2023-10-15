@@ -10,8 +10,8 @@ class BotOne(Bot):
     The spread of the fire is ignored by the bot.
     """
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, q: int = None) -> None:
+        super().__init__(q)
         self.variant = Bots.BOT1
 
     def move(self) -> Tuple[int]:
@@ -24,15 +24,13 @@ class BotOne(Bot):
         return (r, c)
 
     def setup(self) -> None:
-        self.shortest_path = self.get_shortest_path()
+        self.shortest_path = self.get_path()
         if self.shortest_path == [-1, -1]:
             self.path_not_found = True
         else:
             print(f"[INFO]: Shortest path -> {self.shortest_path}")
 
-    def get_shortest_path(self) -> List[int]:
-        """Returns the shortest path from the current location to the button"""
-
+    def get_path(self) -> List[int]:
         lr, lc = self.location
         shortest_path = []
         visited = set()

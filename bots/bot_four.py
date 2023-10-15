@@ -1,17 +1,19 @@
 from .bot import Bot
 from typing import List
 from config import Cell, Bots
-from heapq import heappop, heappush
+from collections import deque
+from heapq import heappush, heappop
 
 
 class BotFour(Bot):
     """
-    The bot plans the shortest path to the button using bi-directional A* search, avoiding the current fire cells, and then executes the next step in that plan.
+    The bot plans the shortest path to the button using the safest path away from the fire, avoiding the simulated probabilities captured, during
+    the fire simulation run and then executes the next step in that plan.
     If fire spreads on the upcoming path during a traversal, the bot will re-attempt to find another shortest path.
     """
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, q: int = None) -> None:
+        super().__init__(q)
         self.variant = Bots.BOT4
 
     def move(self) -> None:
@@ -20,7 +22,7 @@ class BotFour(Bot):
 
         if self.is_path_on_fire():
             print("[INFO]: Recalculating shortest path")
-            new_shortest_path = self.get_shortest_path()
+            new_shortest_path = self.get_path()
             if new_shortest_path == [-1, -1]:
                 self.path_not_found = True
                 return
@@ -35,91 +37,51 @@ class BotFour(Bot):
         return (r, c)
 
     def setup(self) -> None:
-        self.shortest_path = self.get_shortest_path()
+        self.shortest_path = self.get_path()
         if self.shortest_path == [-1, -1]:
             self.path_not_found = True
         else:
             print(f"[INFO]: Shortest path -> {self.shortest_path}")
 
-    def get_shortest_path(self) -> List[int]:
-        """Returns the shortest path from the current location to the button"""
-
+    def get_path(self) -> List[int]:
         lr, lc = self.location
-        br, bc = self.btn_location
-        forward_shortest_path, backwards_shortest_path, shortest_path = [], [], []
-        forward_parent = {(lr, lc): (lr, lc)}
-        backwards_parent = {(br, bc): (br, bc)}
-        forward_heap = [[self.heuristic([lr, lc]), (self.location)]]
-        backwards_heap = [
-            [self.heuristic([br, bc], [lr, lc]), (self.btn_location)]]
-        forward_visited, backwards_visited = set(), set()
+        fire_spread_prediction = self.simulate_fire(len(self.ship_layout) * 2)
+        shortest_path = []
+        visited = set()
+        minHeap = [(self.get_safety_rating(
+            lr, lc, 0, fire_spread_prediction), self.location, 0)]
 
-        while forward_heap and backwards_heap:
-            # Explore forward
-            _, (r, c) = heappop(forward_heap)
-            # Check for intersection between forward and backward explorations
-            if (r, c) in backwards_visited:
-                forward_shortest_path.append((r, c))
-                backwards_shortest_path.append((r, c))
+        while minHeap:
+            _, (r, c), t = heappop(minHeap)
+            if self.ship_layout[r][c] == Cell.BTN:
+                shortest_path.append((r, c))
                 break
-            forward_visited.add((r, c))
-            # Explore forward frontier
+
             for dr, dc in [[1, 0], [-1, 0], [0, 1], [0, -1]]:
                 row, col = r + dr, c + dc
                 if (
                     row not in range(len(self.ship_layout))
                     or col not in range(len(self.ship_layout))
-                    or (row, col) in forward_visited
+                    or (row, col) in visited
                     or self.ship_layout[row][col] == Cell.FIRE
                     or self.ship_layout[row][col] == Cell.CLOSED
                 ):
                     continue
 
-                heappush(forward_heap, [
-                         self.heuristic([row, col]), (row, col)])
-                forward_parent[(row, col)] = (r, c)
+                heappush(minHeap, [self.get_safety_rating(
+                    lr, lc, 0, fire_spread_prediction), (row, col), t + 1])
+                self.parent[(row, col)] = (r, c)
+                visited.add((row, col))
 
-            # Explore backwards
-            _, (r, c) = heappop(backwards_heap)
-            # Check for intersection between forward and backward explorations
-            if (r, c) in forward_visited:
-                backwards_shortest_path.append((r, c))
-                forward_shortest_path.append((r, c))
-                break
-            backwards_visited.add((r, c))
-            # Explore backwards frontier
-            for dr, dc in [[1, 0], [-1, 0], [0, 1], [0, -1]]:
-                row, col = r + dr, c + dc
-                if (
-                    row not in range(len(self.ship_layout))
-                    or col not in range(len(self.ship_layout))
-                    or (row, col) in backwards_visited
-                    or self.ship_layout[row][col] == Cell.FIRE
-                    or self.ship_layout[row][col] == Cell.CLOSED
-                ):
-                    continue
-
-                heappush(backwards_heap, [
-                         self.heuristic([row, col], self.location), (row, col)])
-                backwards_parent[(row, col)] = (r, c)
-
-        if not forward_shortest_path and not backwards_shortest_path:
+        if not shortest_path:
             return [-1, -1]
 
-        while forward_shortest_path and forward_shortest_path[-1] != self.location:
-            r, c = forward_parent[forward_shortest_path[-1]]
-            forward_shortest_path.append((r, c))
+        while shortest_path[-1] != self.location:
+            r, c = self.parent[shortest_path[-1]]
+            shortest_path.append((r, c))
+        shortest_path.reverse()
 
-        while backwards_shortest_path and backwards_shortest_path[-1] != self.btn_location:
-            r, c = backwards_parent[backwards_shortest_path[-1]]
-            backwards_shortest_path.append((r, c))
-
-        # Combine the two shortest paths
-        forward_shortest_path.reverse()
-        shortest_path = forward_shortest_path[1::] + \
-            backwards_shortest_path[1::]
-
-        return shortest_path
+        return shortest_path[1:]
 
     def is_path_on_fire(self) -> bool:
         """Returns True if the current path is blocked by fire, False otherwise"""
@@ -131,3 +93,38 @@ class BotFour(Bot):
                     f"[INFO]: Cell ({r}, {c}) on current shortest path is in on fire!")
                 return True
         return False
+
+    def simulate_fire(self, max_t: int) -> dict:
+        visited = set([self.fire_start_location])
+        queue = deque(
+            [(self.fire_start_location[0], self.fire_start_location[1], 0)])
+        # (r, c) -> (probability, distance)
+        fire_spread_prediction = {self.fire_start_location: (1, 0)}
+
+        while queue:
+            r, c, t = queue.popleft()
+            if t == max_t:
+                break
+
+            for dr, dc in [[1, 0], [-1, 0], [0, 1], [0, -1]]:
+                row, col = r + dr, c + dc
+                if (
+                    row in range(len(self.ship_layout))
+                    and col in range(len(self.ship_layout))
+                    and (row, col) not in visited
+                    and self.ship_layout[row][col] != Cell.FIRE
+                    and self.ship_layout[row][col] != Cell.CLOSED
+                ):
+                    queue.append((row, col, t + 1))
+                    fire_spread_prediction[(row, col)] =\
+                        (float(pow(self.q, t + 1)), t + 1)
+                    visited.add((row, col))
+
+        return fire_spread_prediction
+
+    def get_safety_rating(self, r: int, c: int, t: int, fire_spread_prediction: dict) -> float:
+        if (r, c) in fire_spread_prediction:
+            pf, tf = fire_spread_prediction[(r, c)]
+            if t >= tf:
+                return pf
+        return 0

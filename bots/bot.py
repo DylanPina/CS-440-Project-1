@@ -6,8 +6,10 @@ from config import Cell
 class Bot(ABC):
     """Abstract base class for bots"""
 
-    def __init__(self):
+    def __init__(self, q: int = None):
         self.ship_layout = None
+        self.q = q
+        self.fire_start_location = None
         self.starting_location = None
         self.location = None
         self.btn_location = None
@@ -23,6 +25,9 @@ class Bot(ABC):
     def set_btn_location(self, btn_location: List[int]) -> None:
         br, bc = btn_location
         self.btn_location = (br, bc)
+
+    def set_fire_location(self, fire_location: List[int]) -> None:
+        self.fire_start_location = fire_location
 
     def reached_button(self) -> bool:
         """Returns True if the bot is on the button cell"""
@@ -67,5 +72,11 @@ class Bot(ABC):
     @abstractmethod
     def move(self) -> List[int]:
         """Moves the bot to another cell in the ship and returns new position"""
+
+        pass
+
+    @abstractmethod
+    def get_path(self) -> List[int]:
+        """Returns a path from the current bot location to the button location if there is one, based on bot specific implementation"""
 
         pass

@@ -2,22 +2,33 @@ from typing import List
 from random import randint
 from config import Cell
 from bots import Bot
+from seed import Seed
 import random
 
 
 class Ship:
-    def __init__(self, D: int, q: int) -> None:
+    def __init__(self, D: int, q: int, seed: Seed = None) -> None:
         self.D = D
         self.q = q
         self.bot = None
+        self.seed = seed
+        self.layout = ""
         self.closed_cells = set()
         self.open_cells = set()
         self.burning_cells = set()
-        self.layout = self.create_matrix()
-        self.open_initial_cell()
-        self.open_random_closed_cells_with_one_open_neighbor()
-        self.open_random_dead_end_cells()
-        self.btn_location = self.place_button()
+        self.fire_start_location = None
+        if seed:
+            self.layout = seed.layout
+            self.closed_cells = seed.closed_cells
+            self.open_cells = seed.open_cells
+            self.burning_cells = seed.burning_cells
+            self.btn_location = seed.btn_location
+        else:
+            self.layout = self.create_matrix()
+            self.open_initial_cell()
+            self.open_random_closed_cells_with_one_open_neighbor()
+            self.open_random_dead_end_cells()
+            self.btn_location = self.place_button()
 
     def create_matrix(self) -> List[List[int]]:
         """Creates an D x D matrix used for the layout of the ship"""
@@ -121,8 +132,11 @@ class Ship:
     def start_fire(self) -> None:
         """Places the first fire cell on a random open cell"""
 
-        r, c = random.choice(list(self.open_cells))
-        self.set_cell_on_fire(r, c)
+        r, c = random.choice(list(self.open_cells)
+                             ) if not self.seed else self.seed.fire_start_location
+        if not self.seed:
+            self.set_cell_on_fire(r, c)
+        self.fire_start_location = (r, c)
         print(f"[INFO]: Fire started at ({r}, {c})")
 
     def spread_fire(self) -> None:
@@ -170,13 +184,16 @@ class Ship:
         self.place_bot(bot)
         bot.set_ship_layout(self.layout)
         bot.set_btn_location(self.btn_location)
+        bot.set_fire_location(self.fire_start_location)
         bot.setup()
 
     def place_bot(self, bot: Bot) -> List[int]:
         """Places the bot on a random open cell and returns location of bot"""
 
-        r, c = random.choice(list(self.open_cells))
-        self.open_cells.remove((r, c))
-        self.layout[r][c] = Cell.BOT
+        r, c = random.choice(list(self.open_cells)
+                             ) if not self.seed else self.seed.bot_location
+        if not self.seed:
+            self.open_cells.remove((r, c))
+            self.layout[r][c] = Cell.BOT
         bot.starting_location = bot.location = (r, c)
         print(f"[INFO]: Bot placed at ({r}, {c})")

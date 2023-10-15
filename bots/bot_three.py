@@ -10,8 +10,8 @@ class BotThree(Bot):
     If there is no such path, it plans the shortest path based only on current fire cells, then executes the next step in that plan
     """
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, q: int = None) -> None:
+        super().__init__(q)
         self.variant = Bots.BOT3
 
     def move(self) -> List[int]:
@@ -20,7 +20,7 @@ class BotThree(Bot):
 
         if self.is_path_on_fire():
             print("[INFO]: Recalculating shortest path")
-            new_shortest_path = self.get_shortest_path()
+            new_shortest_path = self.get_path()
             if new_shortest_path == [-1, -1]:
                 self.path_not_found = True
                 return
@@ -35,15 +35,13 @@ class BotThree(Bot):
         return (r, c)
 
     def setup(self) -> None:
-        self.shortest_path = self.get_shortest_path()
+        self.shortest_path = self.get_path()
         if self.shortest_path == [-1, -1]:
             self.path_not_found = True
         else:
             print(f"[INFO]: Shortest path -> {self.shortest_path}")
 
-    def get_shortest_path(self, avoid_adjacent_fire_cells: bool = True) -> List[int]:
-        """Returns the shortest path from the current location to the button"""
-
+    def get_path(self, avoid_adjacent_fire_cells: bool = True) -> List[int]:
         lr, lc = self.location
         shortest_path = []
         visited = set()
@@ -89,7 +87,7 @@ class BotThree(Bot):
             if avoid_adjacent_fire_cells:
                 print(
                     "[INFO]: No path to button avoiding adjacent fire cells. Attempting with adjancent fire cells...")
-                return self.get_shortest_path(False)
+                return self.get_path(False)
             else:
                 return [-1, -1]
 
