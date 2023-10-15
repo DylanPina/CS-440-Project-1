@@ -74,3 +74,9 @@ class Bot(ABC):
         """Moves the bot to another cell in the ship and returns new position"""
 
         pass
+
+    @abstractmethod
+    def get_path(self) -> List[int]:
+        """Returns a path from the current bot location to the button location if there is one, based on bot specific implementation"""
+
+        pass

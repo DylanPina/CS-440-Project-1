@@ -10,8 +10,8 @@ class BotTwo(Bot):
     and then executes the next step in that plan.
     """
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, q: int = None) -> None:
+        super().__init__(q)
         self.variant = Bots.BOT2
 
     def move(self) -> None:
@@ -20,7 +20,7 @@ class BotTwo(Bot):
 
         if self.is_path_on_fire():
             print("[INFO]: Recalculating shortest path")
-            new_shortest_path = self.get_shortest_path()
+            new_shortest_path = self.get_path()
             if new_shortest_path == [-1, -1]:
                 self.path_not_found = True
                 return
@@ -35,15 +35,13 @@ class BotTwo(Bot):
         return (r, c)
 
     def setup(self) -> None:
-        self.shortest_path = self.get_shortest_path()
+        self.shortest_path = self.get_path()
         if self.shortest_path == [-1, -1]:
             self.path_not_found = True
         else:
             print(f"[INFO]: Shortest path -> {self.shortest_path}")
 
-    def get_shortest_path(self) -> List[int]:
-        """Returns the shortest path from the current location to the button"""
-
+    def get_path(self) -> List[int]:
         lr, lc = self.location
         shortest_path = []
         visited = set()
@@ -77,7 +75,7 @@ class BotTwo(Bot):
             r, c = self.parent[shortest_path[-1]]
             shortest_path.append((r, c))
         shortest_path.reverse()
-        
+
         return shortest_path[1:]
 
     def is_path_on_fire(self) -> bool:

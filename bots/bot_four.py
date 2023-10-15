@@ -13,9 +13,8 @@ class BotFour(Bot):
     """
 
     def __init__(self, q: int = None) -> None:
-        super().__init__()
+        super().__init__(q)
         self.variant = Bots.BOT4
-        self.q = q
 
     def move(self) -> None:
         if self.is_on_fire() or self.path_not_found:
@@ -23,7 +22,7 @@ class BotFour(Bot):
 
         if self.is_path_on_fire():
             print("[INFO]: Recalculating shortest path")
-            new_shortest_path = self.get_shortest_path()
+            new_shortest_path = self.get_path()
             if new_shortest_path == [-1, -1]:
                 self.path_not_found = True
                 return
@@ -38,13 +37,13 @@ class BotFour(Bot):
         return (r, c)
 
     def setup(self) -> None:
-        self.shortest_path = self.get_shortest_path()
+        self.shortest_path = self.get_path()
         if self.shortest_path == [-1, -1]:
             self.path_not_found = True
         else:
             print(f"[INFO]: Shortest path -> {self.shortest_path}")
 
-    def get_shortest_path(self) -> List[int]:
+    def get_path(self) -> List[int]:
         lr, lc = self.location
         fire_spread_prediction = self.simulate_fire(len(self.ship_layout) * 2)
         shortest_path = []
